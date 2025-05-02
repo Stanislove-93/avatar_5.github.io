@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор персонажа</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #characterCanvas {
+            border: 1px solid white;
+            margin: 20px auto;
+            display: block;
+        }
+        button {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #666;
+        }
+        footer {
+            background-color: gray;
+            padding: 20px;
+            position: relative; /* Для футера */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Генератор персонажа</h1>
+
+<canvas id="characterCanvas" width="1080" height="1080"></canvas>
+
+<button id="generateButton">Создать</button>
+<button id="downloadButton">Скачать</button>
+
+<footer>
+    <p>Текстовый блок в футере</p>
+    <img src="your-image-url.jpg" alt="Футер изображение" style="max-width: 100%; height: auto;">
+</footer>
+
+<script>
+    const canvas = document.getElementById('characterCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Массивы с изображениями
+        const heads = ['image/Head1.png', 'image/Head2.png']; // Замените на свои изображения
+        const hairstyles = ['image/Hair1.png', 'image/Hair2.png'];
+        const clothes = ['image/Clothes1.png', 'image/Clothes2.png'];
+
+    function getRandomElement(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function drawCharacter() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Очистка холста
+
+        const head = getRandomElement(heads);
+        const hairstyle = getRandomElement(hairstyles);
+        const clothesItem = getRandomElement(clothes);
+
+        // Загружаем и рисуем изображения
+        Promise.all([
+            loadImage(head),
+            loadImage(hairstyle),
+            loadImage(clothesItem)
+        ]).then(images => {
+            images.forEach(image => {
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            });
+        });
+    }
+
+    function loadImage(src) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = src; // Укажите путь к вашим изображениям
+            img.onload = () => resolve(img);
+        });
+    }
+
+    document.getElementById('generateButton').addEventListener('click', drawCharacter);
+
+    document.getElementById('downloadButton').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'character.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+
+</script>
+
+</body>
+</html>
